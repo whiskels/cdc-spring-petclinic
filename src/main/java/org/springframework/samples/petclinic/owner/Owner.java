@@ -18,7 +18,12 @@ package org.springframework.samples.petclinic.owner;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.samples.petclinic.audit.AuditContext;
+import org.springframework.samples.petclinic.model.NamedEntity;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.util.Assert;
 
@@ -44,25 +49,31 @@ import jakarta.validation.constraints.NotBlank;
  * @author Wick Dynex
  */
 @Entity
+@Audited
+@AuditOverride(forClass = Person.class)
 @Table(name = "owners")
 public class Owner extends Person {
 
 	@Column(name = "address")
 	@NotBlank
+	@AuditContext(name = "Address")
 	private String address;
 
 	@Column(name = "city")
 	@NotBlank
+	@NotAudited
 	private String city;
 
 	@Column(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "{telephone.invalid}")
+	@AuditContext(name = "Telephone number")
 	private String telephone;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "owner_id")
 	@OrderBy("name")
+	@NotAudited
 	private final List<Pet> pets = new ArrayList<>();
 
 	public String getAddress() {

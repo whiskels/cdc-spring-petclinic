@@ -17,6 +17,8 @@ package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
 
+import org.hibernate.envers.AuditOverride;
+import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.model.BaseEntity;
 
@@ -32,6 +34,8 @@ import jakarta.validation.constraints.NotBlank;
  * @author Dave Syer
  */
 @Entity
+@Audited
+@AuditOverride(forClass = BaseEntity.class)
 @Table(name = "visits")
 public class Visit extends BaseEntity {
 
