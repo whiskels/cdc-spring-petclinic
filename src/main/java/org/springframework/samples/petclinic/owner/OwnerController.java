@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -82,6 +83,18 @@ class OwnerController {
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
 		return "redirect:/owners/" + owner.getId();
+	}
+
+	@DeleteMapping("/owners/{id}")
+	public String deleteOwner(@PathVariable("id") int ownerId, RedirectAttributes redirectAttributes) {
+		Optional<Owner> optionalOwner = this.owners.findById(ownerId);
+		if (optionalOwner.isPresent()) {
+			this.owners.delete(optionalOwner.get());
+			redirectAttributes.addFlashAttribute("message", "Owner Deleted Successfully");
+		} else {
+			redirectAttributes.addFlashAttribute("error", "Owner not found with id: " + ownerId);
+		}
+		return "redirect:/owners";
 	}
 
 	@GetMapping("/owners/find")
